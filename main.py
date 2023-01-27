@@ -1,1 +1,3 @@
+from cookie_clicker_game_session import CookieClickerGameSession
 
+cookie_clicker_game_session = CookieClickerGameSession()
