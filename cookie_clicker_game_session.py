@@ -24,9 +24,17 @@ class CookieClickerGameSession:
             self.click_cookie()
             self.seconds_since_upgrade = int((datetime.now() - self.last_upgrade).total_seconds())
             if self.seconds_since_upgrade % 5 == 0 and self.seconds_since_upgrade > 0:
-                print("5 seconds passed...")
+                self.buy_best_upgrade()
                 self.seconds_since_upgrade = 0
                 self.last_upgrade = datetime.now()
 
     def click_cookie(self):
         self.cookie_el.click()
+
+    def buy_best_upgrade(self):
+        store_el = self.driver.find_element(by=By.ID, value="store")
+        available_item_els = store_el.find_elements(by=By.TAG_NAME, value="div")
+        for item in available_item_els[::-1]:
+            item_class = item.get_attribute("class")
+            if not item_class:
+                print("No class for item.")
