@@ -3,6 +3,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.options import Options
 # from selenium.webdriver.common.keys import Keys
 from datetime import datetime
+import re
 
 
 class CookieClickerGameSession:
@@ -34,7 +35,13 @@ class CookieClickerGameSession:
     def buy_best_upgrade(self):
         store_el = self.driver.find_element(by=By.ID, value="store")
         available_item_els = store_el.find_elements(by=By.TAG_NAME, value="div")
-        for item in available_item_els[::-1]:
-            item_class = item.get_attribute("class")
+        best_upgrade_dict = dict(el=None, price=0)
+        for item_el in available_item_els[::-1]:
+            item_class = item_el.get_attribute("class")
             if not item_class:
-                print("No class for item.")
+                item_title_el = item_el.find_element(by=By.TAG_NAME, value="b")
+                item_title_commas_removed = item_title_el.text.replace(",", "")
+                item_price_str = re.search(r"[-+]?\d*\.?\d+|[-+]?\d+",
+                                           item_title_commas_removed).group(0)
+                item_price_float = int(item_price_str)
+                print(item_price_float)
