@@ -29,6 +29,11 @@ class CookieClickerGameSession:
                 self.buy_best_upgrade()
                 self.seconds_since_upgrade = 0
                 self.last_upgrade = datetime.now()
+            game_duration_in_seconds = (datetime.now() - self.start_time).total_seconds()
+            if game_duration_in_seconds > 30:
+                self.game_running = False
+
+        self.game_over()
 
     def click_cookie(self):
         self.cookie_el.click()
@@ -47,7 +52,19 @@ class CookieClickerGameSession:
                 item_price_int = int(item_price_str)
                 if item_price_int > best_upgrade_dict["price"]:
                     best_upgrade_dict = dict(el=item_el, price=item_price_int)
-        cookie_balance_el = self.driver.find_element(by=By.ID, value="money")
-        self.cookie_balance_int = int(cookie_balance_el.text.replace(",", ""))
+        self.cookie_balance_int = self.get_cookie_balance()
         if self.cookie_balance_int > best_upgrade_dict["price"]:
             best_upgrade_dict["el"].click()
+
+    def get_cookie_balance(self):
+        cookie_balance_el = self.driver.find_element(by=By.ID, value="money")
+        cookie_balance_int = int(cookie_balance_el.text.replace(",", ""))
+        return cookie_balance_int
+
+    def game_over(self):
+        cookies_per_second = self.driver.find_element(by=By.ID, value="cps").text
+        final_cookie_balance = self.get_cookie_balance()
+        print("GAME OVER")
+        print(cookies_per_second)
+        print(f"Final cookie balance: {final_cookie_balance}")
+        self.driver.quit()
